@@ -1,13 +1,15 @@
-function fnNextTrain(){
+function fnNextTrain(fRuntime, freq){
 	
-	var tFrequency = 3;
+	var tFrequency = Number(freq);
+	var firstTime = Number(fRuntime);
 
     // Time is 3:30 AM
-    var firstTime = "03:30";
-
+    //var firstTime = "03:30";
+    console.log("fRuntime: " + firstTime);
+    console.log("freq: " + tFrequency);
     // First Time (pushed back 1 year to make sure it comes before current time)
     var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
-    console.log(firstTimeConverted);
+    console.log("firstTimeConverted: " + firstTimeConverted);
 
     // Current Time
     var currentTime = moment();
@@ -28,5 +30,14 @@ function fnNextTrain(){
     // Next Train
     var nextTrain = moment().add(tMinutesTillTrain, "minutes");
     console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
-	
+    nextTrain = moment(nextTrain).format("hh:mm");
+
+    return nextTrain;
+
+}
+
+function fnMinAway(){
+
+	return;
+
 }

@@ -6,29 +6,23 @@
   <meta charset="UTF-8">
   <title>Train Schedule Monitor</title>
 
-  <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <!-- Firebase Reference -->
-   <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
-  <!-- Moment.js Reference -->
-  <!-- <script src="http://momentjs.com/downloads/moment.js"></script>   -->
+  <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
   <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
-  <script src="assets/traing.js"></script>
+  
 
 </head>
 
 <body>
-
   <div class="container">
-
     <br>
-
     <!-- Jumbotron -->
     <div class="jumbotron">
       <h1 class="text-center">Anytime is Train Time</h1>
       <h4>Choo Choo. Chee Chee.</h4>
+      <h4 id="TimeAlert"></h4>
     </div>
     <div class="row">
       <!-- Train Schedule Listing-->
@@ -46,7 +40,6 @@
                     <th>Frequency (min)</th>
                     <th>Next Arrival</th>
                     <th>Minutes away</th>
-                    
                   </tr>
                 </thead>
                 <tbody>
@@ -61,7 +54,7 @@
       <div class="col-lg-12">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 class="panel-title">Add Employee</h3>
+            <h3 class="panel-title">New Train Record</h3>
           </div>
           <div class="panel-body">
 
@@ -94,16 +87,11 @@
 
   </div>
 
-  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery.js"></script>
-
-  <!-- LINK TO FIREBASE GOES HERE -->
   <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
 
   <!-- Script -->
   <script>
-    // START CODING BELOW!!
-
     // Initialize Firebase
     var config = {
     apiKey: "AIzaSyC5xbX_4Y6gEFEvJWVTNX-w7cQe4kccBjE",
@@ -122,18 +110,13 @@
     $("#add-train").on("click", function() {
       // Don't refresh the page!
       event.preventDefault();
-
-      // YOUR TASK!!!
-      // Code in the logic for storing and retrieving the most recent user.
-      // Don't forget to provide initial data to your Firebase database.
+    
       var startdate = new Date();
-
       var name = $("#name-input").val().trim();
       var destination = $("#destination-input").val().trim();
-      starttime = moment($("#starttime-input").val().trim(), "HH:ss").format("X");
+      var starttime = moment($("#starttime-input").val().trim(), "HH:mm").subtract(1, "years").format("X");
       var frequency = $("#frequency-input").val().trim();
-
-
+      //Push or save new record
       database.ref().push({
         name: name,
         destination: destination,
@@ -141,44 +124,44 @@
         frequency: frequency
       });
 
+      // alert that the new record was suucessfully added
+      alert("New Train Record Added to Firebase");
+
+      // Clears all values after entr is made
+      $("#name-input").val("");
+      $("#destination-input").val("");
+      $("#starttime-input").val("");
+      $("#frequency-input").val("");
+
+      // Determine when the next train arrives.
+      return false;
+
     });
 
     // Firebase watcher + initial loader HINT: .on("value")
-    database.ref().on("child_added", function(childSnapshot) {
+    database.ref().on("child_added", function(childSnapshot, prevChildKey) {
+      //put object values into local variables
+      var trainName = childSnapshot.val().name;
+      var trainDestination = childSnapshot.val().destination;
+      var trainStartTime = childSnapshot.val().starttime;
+      var trainFrequency = childSnapshot.val().frequency;
 
-      // Log everything that's coming out of snapshot
-      console.log(childSnapshot.val());
-      console.log(childSnapshot.val().name);
-      console.log(childSnapshot.val().destination);
-      console.log(childSnapshot.val().starttime);
-      console.log(childSnapshot.val().frequency);
+      var differenceTimes = moment().diff(moment.unix(trainStartTime), "minutes");
+      var trainRemainder = moment().diff(moment.unix(trainStartTime), "minutes") % trainFrequency;
+      //grab the minutes remaining until next train
+      var trainMinutes = trainFrequency - trainRemainder;
+      //Add the minutes remaining to get next train time      
+      var trainArrival = moment().add(trainMinutes, "m").format("hh:mm A");
 
-      // Store everything into a variable.
-      var trnName = childSnapshot.val().name;
-      var trnDest = childSnapshot.val().destination;
-      var trnTime = childSnapshot.val().starttime;
-      var trnFreq = childSnapshot.val().frequency;
-      // Change the HTML to reflect
-      // Prettify the first run time
-      var trnTimeFormatted = moment(trnTime).format("LT");
-
-  // Calculate the next train arrival from current time
-  // 
-
-      var trnNextArrival = fnNextTrain(trnTime, trnFreq);
-
-      console.log("trnNextArrival: " + trnNextArrival);
-
-      var trnMinFromNow = 0;
-
-  // Add each train's data into the table
-  $("#train-table > tbody").append("<tr><td>" + trnName + "</td><td>" + trnDest + "</td><td>" +
-  trnFreq + "</td><td>" + trnNextArrival + "</td><td>" + trnMinFromNow + "</td></tr>");
-      
-      // Handle the errors
-    }, function(errorObject) {
-      console.log("Errors handled: " + errorObject.code);
+    // Add each train's data into the table
+      $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + trainDestination + "</td><td>"
+      + trainFrequency + "</td><td>" + trainArrival + "</td><td>" + trainMinutes + "</td></tr>");
     });
+
+    //Put current time in jumbo
+    var nowTime = moment();
+    $('#TimeAlert').html("CURRENT TIME: " + moment(nowTime).format("hh:mm"));
+
   </script>
 
 </body>
