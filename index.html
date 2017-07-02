@@ -4,19 +4,18 @@
 <head>
 
   <meta charset="UTF-8">
-  <title>Employee Data Management</title>
+  <title>Train Schedule Monitor</title>
 
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <!-- Firebase Reference -->
-    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
-
-    <!-- Moment.js Reference -->
-    <!-- <script src="http://momentjs.com/downloads/moment.js"></script>   -->
-    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
-
+   <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+  <!-- Moment.js Reference -->
+  <!-- <script src="http://momentjs.com/downloads/moment.js"></script>   -->
+  <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+  <script src="assets/traing.js"></script>
 
 </head>
 
@@ -28,26 +27,26 @@
 
     <!-- Jumbotron -->
     <div class="jumbotron">
-      <h1 class="text-center">Employee Data Management</h1>
-      <h4>A Comprehensive Directory of Employee Billable Hours</h4>
+      <h1 class="text-center">Anytime is Train Time</h1>
+      <h4>Choo Choo. Chee Chee.</h4>
     </div>
     <div class="row">
-      <!-- Employee Records Listing-->
+      <!-- Train Schedule Listing-->
       <div class="col-lg-12">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h3 class="panel-title">Current Employees</h3>
+                <h3 class="panel-title">Current Train Schedule</h3>
               </div>
             <div class="panel-body">
-            <table class="table table-hover" id='employee-table'>
+            <table class="table table-hover" id='train-table'>
                 <thead>
                   <tr>
-                    <th>Employee Name</th>
-                    <th>Role</th>
-                    <th>Start Date</th>
-                    <th>Months Worked</th>
-                    <th>Monthly Rate ($)</th>
-                    <th>Total Billed ($)</th>
+                    <th>Name</th>
+                    <th>Destination</th>
+                    <th>Frequency (min)</th>
+                    <th>Next Arrival</th>
+                    <th>Minutes away</th>
+                    
                   </tr>
                 </thead>
                 <tbody>
@@ -73,18 +72,18 @@
                 <input class="form-control" id="name-input" type="text">
               </div>
               <div class="form-group">
-                <label for="email-input">Role:</label>
-                <input class="form-control" id="role-input" type="text">
+                <label for="destination-input">Destination:</label>
+                <input class="form-control" id="destination-input" type="text">
               </div>
               <div class="form-group">
-                <label for="age-input">Start Date (mm/dd/yyyy - ex. 01/01/1989):</label>
-                <input class="form-control" id="startdate-input" type="date">
+                <label for="starttime-input">First Time(HH:mm military time):</label>
+                <input class="form-control" id="starttime-input" type="text">
               </div>
               <div class="form-group">
-                <label for="comment-input">Monthly Rate:</label>
-                <input class="form-control" id="monthrate-input" type="number"></input>
+                <label for="frequency-input">Frequency (min):</label>
+                <input class="form-control" id="frequency-input" type="number"></input>
               </div>
-              <button class="btn btn-default" id="add-user" type="submit">Submit</button>
+              <button class="btn btn-default" id="add-train" type="submit">Submit</button>
             </form>
           </div>
         </div>
@@ -107,23 +106,20 @@
 
     // Initialize Firebase
     var config = {
-    apiKey: "AIzaSyA2luHS-fHr1w65HpiL7HWS2NO8-r-pFAQ",
-    authDomain: "team4empdataproject.firebaseapp.com",
-    databaseURL: "https://team4empdataproject.firebaseio.com",
-    projectId: "team4empdataproject",
-    storageBucket: "",
-    messagingSenderId: "863126920899"
+    apiKey: "AIzaSyC5xbX_4Y6gEFEvJWVTNX-w7cQe4kccBjE",
+    authDomain: "trainschedule-3e1a9.firebaseapp.com",
+    databaseURL: "https://trainschedule-3e1a9.firebaseio.com",
+    projectId: "trainschedule-3e1a9",
+    storageBucket: "trainschedule-3e1a9.appspot.com",
+    messagingSenderId: "813195387035"
   };
 
     firebase.initializeApp(config);
 
     // Create a variable to reference the database
     var database = firebase.database();
-
-    
-
     // Capture Button Click
-    $("#add-user").on("click", function() {
+    $("#add-train").on("click", function() {
       // Don't refresh the page!
       event.preventDefault();
 
@@ -133,16 +129,16 @@
       var startdate = new Date();
 
       var name = $("#name-input").val().trim();
-      var role = $("#role-input").val().trim();
-      startdate = moment($("#startdate-input").val().trim(), "MM/DD/YY").format("X");
-      var monthrate = $("#monthrate-input").val().trim();
+      var destination = $("#destination-input").val().trim();
+      starttime = moment($("#starttime-input").val().trim(), "HH:ss").format("X");
+      var frequency = $("#frequency-input").val().trim();
 
 
       database.ref().push({
         name: name,
-        role: role,
-        startdate: startdate,
-        monthrate: monthrate
+        destination: destination,
+        starttime: starttime,
+        frequency: frequency
       });
 
     });
@@ -153,37 +149,32 @@
       // Log everything that's coming out of snapshot
       console.log(childSnapshot.val());
       console.log(childSnapshot.val().name);
-      console.log(childSnapshot.val().role);
-      console.log(childSnapshot.val().startdate);
-      console.log(childSnapshot.val().monthrate);
+      console.log(childSnapshot.val().destination);
+      console.log(childSnapshot.val().starttime);
+      console.log(childSnapshot.val().frequency);
 
       // Store everything into a variable.
-      var empName = childSnapshot.val().name;
-      var empRole = childSnapshot.val().role;
-      var empStart = childSnapshot.val().startdate;
-      var empRate = childSnapshot.val().monthrate;
+      var trnName = childSnapshot.val().name;
+      var trnDest = childSnapshot.val().destination;
+      var trnTime = childSnapshot.val().starttime;
+      var trnFreq = childSnapshot.val().frequency;
       // Change the HTML to reflect
-      // Prettify the employee start
-      var empStartPretty = moment(empStart).format("MM/DD/YY");
+      // Prettify the first run time
+      var trnTimeFormatted = moment(trnTime).format("LT");
 
-  // Calculate the months worked using hardcore math
-  // To calculate the months worked
-      var empMonths = moment().diff(moment.unix(empStart, "X"), "months");
-      console.log("empMonths: " + empMonths);
+  // Calculate the next train arrival from current time
+  // 
 
-  // Calculate the total billed rate
-      var empBilled = empMonths * empRate;
-      console.log("empBilled: " + empBilled);
+      var trnNextArrival = fnNextTrain(trnTime, trnFreq);
+
+      console.log("trnNextArrival: " + trnNextArrival);
+
+      var trnMinFromNow = 0;
 
   // Add each train's data into the table
-  $("#employee-table > tbody").append("<tr><td>" + empName + "</td><td>" + empRole + "</td><td>" +
-  empStartPretty + "</td><td>" + empMonths + "</td><td>" + empRate + "</td><td>" + empBilled + "</td></tr>");
-      //This is where the table population would go
-      /*$("#name-display").html(snapshot.val().name);
-      $("#role-display").html(snapshot.val().role);
-      $("#startdate-display").html(snapshot.val().startdate);
-      $("#monthrate-display").html(snapshot.val().monthrate);
-*/
+  $("#train-table > tbody").append("<tr><td>" + trnName + "</td><td>" + trnDest + "</td><td>" +
+  trnFreq + "</td><td>" + trnNextArrival + "</td><td>" + trnMinFromNow + "</td></tr>");
+      
       // Handle the errors
     }, function(errorObject) {
       console.log("Errors handled: " + errorObject.code);
