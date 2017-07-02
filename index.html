@@ -12,6 +12,27 @@
   <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
   <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
   
+  <style>
+    
+    h4{
+      
+      text-align: center;
+
+    }
+
+    .jumbotron{
+  
+      background-color: #7F462C;
+      color: white;
+    }
+    
+    .panel-title{
+
+      color: white;
+
+    }
+
+  </style>
 
 </head>
 
@@ -20,15 +41,15 @@
     <br>
     <!-- Jumbotron -->
     <div class="jumbotron">
-      <h1 class="text-center">Anytime is Train Time</h1>
-      <h4>Choo Choo. Chee Chee.</h4>
+      <h1 class="text-center">Knapford Station</h1>
+      <h4>Thomas and Friends Railways</h4>
       <h4 id="TimeAlert"></h4>
     </div>
     <div class="row">
       <!-- Train Schedule Listing-->
       <div class="col-lg-12">
             <div class="panel panel-default">
-              <div class="panel-heading">
+              <div class="panel-heading" style="background-color: blue">
                 <h3 class="panel-title">Current Train Schedule</h3>
               </div>
             <div class="panel-body">
@@ -53,7 +74,7 @@
       <!-- Employee Register Record Panel-->
       <div class="col-lg-12">
         <div class="panel panel-default">
-          <div class="panel-heading">
+          <div class="panel-heading" style="background-color: blue">
             <h3 class="panel-title">New Train Record</h3>
           </div>
           <div class="panel-body">
@@ -76,7 +97,7 @@
                 <label for="frequency-input">Frequency (min):</label>
                 <input class="form-control" id="frequency-input" type="number"></input>
               </div>
-              <button class="btn btn-default" id="add-train" type="submit">Submit</button>
+              <button class="btn btn-submit" id="add-train" type="submit">Submit</button>
             </form>
           </div>
         </div>
